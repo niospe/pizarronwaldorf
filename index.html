@@ -3,14 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Walfordf - Directorio de Negocios</title>
+    <title>Pizarron Waldorf - Directorio de Negocios</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Leaflet (mapa) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
     <div class="container">
-        <!-- Header con animación -->
+
+        <!-- Header -->
         <header class="header fade-in">
             <div class="header-content">
                 <h1>✨ Pizarron Waldorf</h1>
@@ -29,15 +32,13 @@
                 <i class="fas fa-search search-icon"></i>
                 <input type="text" id="searchInput" placeholder="Buscar negocio o servicio..." class="search-input">
             </div>
-            
+
             <div class="filters-container">
                 <button class="filter-btn active" data-filter="todos">Todos</button>
                 <button class="filter-btn" data-filter="negocio">Negocios</button>
                 <button class="filter-btn" data-filter="servicio">Servicios</button>
             </div>
 
-            
-            <!-- Filtro de ciudades - ACTUALIZADO -->
             <div class="city-filter-container">
                 <select id="cityFilter" class="city-select">
                     <option value="todas">Todas las ciudades</option>
@@ -50,130 +51,138 @@
                     <option value="otro">Otra ciudad</option>
                 </select>
             </div>
-           <div class="category-filter-container">
-    <select id="categoryFilter" class="category-select">
-        <option value="todas">Todas las categorías</option>
-        <option value="Gastronomia">🍔 Gastronomía</option>
-        <option value="Servicios Profesionales">🛠️ Servicios Profesionales</option>
-        <option value="Servicios Digitales">💻 Servicios Digitales</option>
-        <option value="Salud y Bienestar">🏥 Salud y Bienestar</option>
-        <option value="Automotriz">🚗 Automotriz</option>
-        <option value="Educacion">📚 Educación</option>
-        <option value="Hogar">🏡 Hogar</option>
-        <option value="Mascotas">🐾 Mascotas</option>
-        <option value="Otros Servicios">🎁 Otros Servicios</option>
-    </select>
-</div>
 
+            <div class="category-filter-container">
+                <select id="categoryFilter" class="category-select">
+                    <option value="todas">Todas las categorías</option>
+                </select>
             </div>
         </section>
 
-        <!-- Contador de resultados -->
+        <!-- Contador -->
         <div class="results-count slide-up">
             <span id="resultsCount">0</span> negocios encontrados
         </div>
 
         <!-- Grid de negocios -->
-        <section class="business-grid" id="businessGrid">
-            <!-- Los negocios se cargarán dinámicamente -->
+        <section class="business-grid" id="businessGrid"></section>
+
+        <!-- Mapa -->
+        <section class="map-section slide-up">
+            <div class="map-header">
+                <i class="fas fa-map-marked-alt"></i> Negocios en el mapa
+            </div>
+            <div id="map"></div>
         </section>
 
-        <!-- Botón flotante para agregar negocio -->
+        <!-- Botón flotante agregar -->
         <button class="fab" id="openFormBtn">
             <i class="fas fa-plus"></i>
         </button>
 
-    <!-- Modal para agregar negocio -->
-    <div id="businessModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 class="modal-title">🌸 Agregar Nuevo Negocio</h2>
-            
-            <div id="formMessage" class="message"></div>
-            
-            <form id="businessForm">
-                <div class="form-group">
-                    <label for="titulo">Nombre del negocio/servicio *</label>
-                    <input type="text" id="titulo" name="titulo" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Tipo *</label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="negocio" name="tipo" value="negocio" checked>
-                            <label for="negocio">🏪 Negocio</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="servicio" name="tipo" value="servicio">
-                            <label for="servicio">🛠️ Servicio</label>
+        <!-- Modal agregar negocio -->
+        <div id="businessModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 class="modal-title">🌸 Agregar Negocio</h2>
+
+                <div id="formMessage" class="message"></div>
+
+                <form id="businessForm">
+                    <div class="form-group">
+                        <label for="titulo">Nombre del negocio/servicio *</label>
+                        <input type="text" id="titulo" name="titulo" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tipo *</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="negocio" name="tipo" value="negocio" checked>
+                                <label for="negocio">🏪 Negocio</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="servicio" name="tipo" value="servicio">
+                                <label for="servicio">🛠️ Servicio</label>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-               <!-- Modal - Campo de ciudad ACTUALIZADO -->
-                <div class="form-group">
-                    <label for="ciudad">Ciudad / Zona *</label>
-                    <select id="ciudad" name="ciudad" class="form-control" required>
-                        <option value="">Seleccionar ciudad</option>
-                        <option value="cordoba">Córdoba</option>
-                        <option value="rio ceballos">Río Ceballos</option>
-                        <option value="tanti">Tanti</option>
-                        <option value="la calera">La Calera</option>
-                        <option value="saldan">Saldán</option>
-                        <option value="mendiolaza">Mendiolaza</option>
-                        <option value="otro">Otra ciudad</option>
-                    </select>
-                </div>
-              <div class="form-group">
-    <label for="categoria">Categoría *</label>
-    <select id="categoria" name="categoria" class="form-control" required>
-        <option value="">Seleccionar categoría</option>
-        <option value="Gastronomia">🍔 Gastronomía</option>
-        <option value="Servicios Profesionales">🛠️ Servicios Profesionales</option>
-        <option value="Servicios Digitales">💻 Servicios Digitales</option>
-        <option value="Salud y Bienestar">🏥 Salud y Bienestar</option>
-        <option value="Automotriz">🚗 Automotriz</option>
-        <option value="Educacion">📚 Educación</option>
-        <option value="Hogar">🏡 Hogar</option>
-        <option value="Mascotas">🐾 Mascotas</option>
-        <option value="Otros Servicios">🎁 Otros Servicios</option>
-    </select>
-</div>
-                <div class="form-group">
-                    <label for="descripcion">Descripción *</label>
-                    <textarea id="descripcion" name="descripcion" class="form-control" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="whatsapp">WhatsApp (solo números, ej: 5491123456789)</label>
-                    <input type="tel" id="whatsapp" name="whatsapp" class="form-control" placeholder="5491123456789">
-                </div>
-                
-                <div class="form-group">
-                    <label for="email">Correo electrónico</label>
-                    <input type="email" id="email" name="email" class="form-control">
-                </div>
-                
-                <div class="form-group">
-                    <label for="web">Página web</label>
-                    <input type="url" id="web" name="web" class="form-control" placeholder="https://ejemplo.com">
-                </div>
-                
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <i class="fas fa-plus-circle"></i> Agregar Negocio
-                </button>
-            </form>
+
+                    <div class="form-group">
+                        <label for="ciudad">Ciudad / Zona *</label>
+                        <select id="ciudad" name="ciudad" class="form-control" required>
+                            <option value="">Seleccionar ciudad</option>
+                            <option value="cordoba">Córdoba</option>
+                            <option value="rio ceballos">Río Ceballos</option>
+                            <option value="tanti">Tanti</option>
+                            <option value="la calera">La Calera</option>
+                            <option value="saldan">Saldán</option>
+                            <option value="mendiolaza">Mendiolaza</option>
+                            <option value="otro">Otra ciudad</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="categoria">Categoría *</label>
+                        <select id="categoria" name="categoria" class="form-control" required>
+                            <option value="">Seleccionar categoría</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descripcion">Descripción *</label>
+                        <textarea id="descripcion" name="descripcion" class="form-control" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="direccion">
+                            Dirección
+                            <span class="label-hint">(opcional — aparecerá en el mapa)</span>
+                        </label>
+                        <input type="text" id="direccion" name="direccion" class="form-control"
+                            placeholder="Ej: Av. Colón 1234, Córdoba">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="whatsapp">WhatsApp (solo números, ej: 5493512345678)</label>
+                        <input type="tel" id="whatsapp" name="whatsapp" class="form-control" placeholder="5493512345678">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" name="email" class="form-control">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="web">Página web</label>
+                        <input type="text" id="web" name="web" class="form-control" placeholder="ejemplo.com">
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-plus-circle"></i> Agregar Negocio
+                    </button>
+                </form>
+            </div>
         </div>
+
+        <!-- Footer -->
+        <footer class="footer fade-in">
+            <p>© 2024 Comunidad Waldorf</p>
+            <p class="footer-small">¿Tenés un negocio? Hacé clic en el botón + para agregarlo</p>
+            <p class="footer-small"><a href="admin/admin.html">Panel de administración</a></p>
+        </footer>
+
     </div>
 
-    <!-- Footer -->
-    <footer class="footer fade-in">
-        <p>© 2024 Comunidad Walfordf</p>
-        <p class="footer-small">¿Tienes un negocio? Hacé clic en el botón + para agregarlo</p>
-        <p class="footer-small">Para modificar o eliminar publicaciones, enviar un correo a <a href="mailto:niospe@gmail.com">niospe@gmail.com</a></p>
-    </footer>
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
 
+    <!-- Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- App -->
     <script src="script.js"></script>
 </body>
 </html>

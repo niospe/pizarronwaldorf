@@ -762,3 +762,64 @@ textarea.form-control {
     margin-bottom: 5px;
     margin-right: 5px;
 }
+
+/* ===== MAPA ===== */
+.map-section {
+    margin-bottom: 30px;
+    border-radius: 25px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.map-header {
+    background: rgba(255,255,255,0.95);
+    padding: 14px 20px;
+    font-weight: 600;
+    color: #5E4B5E;
+    font-size: 1rem;
+    border-bottom: 2px solid #F0E0F0;
+}
+
+.map-header i {
+    margin-right: 8px;
+    color: var(--pastel-purple);
+}
+
+#map {
+    height: 340px;
+    width: 100%;
+    background: #f0f0f0;
+}
+
+/* Marcadores personalizados */
+.marker-pin {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+    border: 2px solid var(--pastel-purple);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.marker-pin:hover { transform: scale(1.1); }
+
+/* Popup del mapa */
+.popup-negocio { font-family: 'Quicksand', sans-serif; min-width: 150px; }
+.popup-negocio strong { color: #5E4B5E; font-size: 1rem; }
+.popup-negocio a { color: #25D366; font-weight: 600; text-decoration: none; font-size: 0.9rem; }
+
+/* Badge en mapa */
+.en-mapa { background: var(--pastel-green) !important; color: #2E5A4B !important; }
+
+/* Hint en label */
+.label-hint { font-weight: 300; font-size: 0.82rem; color: #A58DA5; margin-left: 5px; }
+
+@media (max-width: 768px) {
+    #map { height: 260px; }
+}
